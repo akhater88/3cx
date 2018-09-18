@@ -101,7 +101,8 @@ class InBoundCallReportController extends Controller
                     
                     
                 },'Source')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'Externa (international)']);
-                $filter->where(function(){
+                $filter->where(function($query){
+                    $query->where('from_no',$this->input);
                     
                 },'Destination')->select('/admin/auth/reports/destinationoption');
 //                 $filter->where(function($query){
