@@ -55,7 +55,10 @@ class InBoundCallReportController extends Controller
             $grid->to_dispname('Name');
             $grid->call_type('Status');
             $grid->call_sub_type('Status Call');
-            $grid->duration('Duration');
+            $grid->column('Duration')->display(function(){
+                $duration = new DateTime($this->duration);
+                return $duration->format("H:i:s");
+            });
             $grid->column('Total Waiting Time')->display(function(){
                 $time_start = new DateTime($this->time_start);
                 $time_end = new DateTime($this->time_end);
@@ -105,6 +108,24 @@ class InBoundCallReportController extends Controller
                     $query->where('from_no',$this->input);
                     
                 },'Destination')->select('/admin/auth/reports/destinationoption');
+
+                $filter->betweenCustome('duration', 'Duration')->time();
+                
+                $filter->where(function($query){
+                    switch ($this->input){
+                        case 'answered':
+                            $query->where('call_type','answered');
+                            break;
+                        case 'unanswered':
+                            $query->where('call_type','unanswered');
+                            break;
+                        case 'abondont':
+                            $query->where("call_sub_type","abondont");
+                            break;
+
+                    }
+                    
+                },"Status")->select(['answered'=>'Answered','unanswered'=>'Unanswered','abondont'=>'Abandoned']);
 //                 $filter->where(function($query){
 //                     $input = 'Ext.'.$this->input;
 //                     $query->whereRaw (" (final_number = '' AND to_no = '$input') OR final_number = '$input' ");

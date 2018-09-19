@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Input;
  * @method AbstractFilter     gt($column, $label = '')
  * @method AbstractFilter     lt($column, $label = '')
  * @method AbstractFilter     between($column, $label = '')
+ * @method AbstractFilter     betweenCustome($column, $label = '')
  * @method AbstractFilter     in($column, $label = '')
  * @method AbstractFilter     notIn($column, $label = '')
  * @method AbstractFilter     where($callback, $label)
@@ -44,7 +45,7 @@ class Filter implements Renderable
      * @var array
      */
     protected $supports = [
-        'equal', 'notEqual', 'ilike', 'like', 'gt', 'lt', 'between',
+        'equal', 'notEqual', 'ilike', 'like', 'gt', 'lt', 'between','betweenCustome',
         'where', 'in', 'notIn', 'date', 'day', 'month', 'year', 'hidden',
     ];
 

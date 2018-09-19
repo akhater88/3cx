@@ -68,6 +68,10 @@ class Read3cxLogFile extends Command
                             $time = strtotime($recordArray[$key]);
                             $recordArray[$key] = date('Y-m-d H:i:s',$time);
                         }
+                        if($index == 'duration'){
+                            $time = strtotime('1970-01-01 '.$recordArray[$key]);
+                            $recordArray[$key] = date('Y-m-d H:i:s',$time);
+                        }
                         $recordIndexedArray[$index] = $recordArray[$key];
                     }
                     
