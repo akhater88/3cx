@@ -133,7 +133,7 @@ class InBoundCallReportController extends Controller
                'custometotalcalltime'
                 
             ])
-            ->header($header)->fileName('InBoundCallReport')->extension('xlsx');
+            ->header($header)->fileName('InBoundCallReport')->extension('csv');
             $grid->exporter($exporter);
             Admin::script('$("a[class=export-selected]").remove();');
                
