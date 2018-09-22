@@ -280,6 +280,8 @@ class Admin
                 $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
                 $router->get('/auth/reports/inboundcallreport', 'InBoundCallReportController@index');
                 $router->get('/auth/reports/destinationoption', 'InBoundCallReportController@destinationoption');
+                $router->get('/auth/reports/outboundcallreport', 'OutBoundCallReportController@index');
+                $router->get('/auth/reports/outboundcallreport/destinationoption', 'OutBoundCallReportController@destinationoption');
                 
             });
 
