@@ -9,6 +9,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid\Filter;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Models\LogReport;
+use Encore\Admin\Controllers\Tools\ExcelExpoter;
 use DateTime;
 
 class InBoundCallReportController extends Controller
@@ -105,6 +106,36 @@ class InBoundCallReportController extends Controller
             $grid->disableActions();
             $grid->disableCreateButton();
             $grid->disableRowSelector();
+            // Expoter
+            $exporter = new ExcelExpoter();
+            $header = [
+                'Date / Time',
+                'Name',
+                'Status',
+                'Status Call',
+                'Source',
+                'Destination', 
+                'Duration',
+                'Total Waiting Time',
+                'Total Call Time'
+            ];
+            $exporter->fileName('RedemptionReport')
+            ->title('RedemptionReport')
+            ->tableColumns([
+               'time_start',
+                'to_dispname',
+               'call_type',
+               'call_sub_type',
+               'customesource',
+               'customedestination',
+               'customedurationcustome',
+               'custometotalwaitingtime',
+               'custometotalcalltime'
+                
+            ])
+            ->header($header)->fileName('InBoundCallReport')->extension('xlsx');
+            $grid->exporter($exporter);
+            Admin::script('$("a[class=export-selected]").remove();');
                
         });
     }
