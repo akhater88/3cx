@@ -42,8 +42,8 @@ class InBoundCallReportController extends Controller
         return Admin::grid(LogReport::class, function (Grid $grid) {
             $grid->model()->where('to_no','like','Ext.%');
             $grid->time_start('Date / Time');
-            $grid->customesource('Source');
-            $grid->customedestination('Destination');
+            $grid->customedestination('Source');
+            $grid->customesource('Destination');
             $grid->to_dispname('Name');
             $grid->call_type('Status');
             $grid->call_sub_type('Status Call');
