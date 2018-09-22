@@ -64,9 +64,9 @@ class BetweenCustome extends AbstractFilter
 
         $this->value = array_get($inputs, $this->column);
         if (isset($value['start'])) 
-        $this->value['start'] =  '1970-01-01 '.$this->value['start'];
+            $this->value['start'] =  '1970-01-01 '.$this->value['start'];
         if (isset($value['end'])) 
-        $this->value['end'] =  '1970-01-01 '.$this->value['end'];
+            $this->value['end'] =  '1970-01-01 '.$this->value['end'];
         
         $value = array_filter($this->value, function ($val) {
             return $val !== '';
