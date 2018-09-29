@@ -26,7 +26,7 @@ class OutBoundCallReportController extends Controller
         return Admin::content(function (Content $content) {
             
             $content->header('Reports 3cx');
-            $content->description('Out Bound Calls');
+            $content->description('Outbound calls');
             $content->body($this->grid());
         });
     }
@@ -54,10 +54,7 @@ class OutBoundCallReportController extends Controller
             $grid->filter(function (Filter $filter) {
                 $filter->disableIdFilter();
                 $current = Carbon::now();
-                $filter->where(function($query){
-                    $query->where('from_no',$this->input);
-                    
-                },'Source')->select('/admin/auth/reports/outboundcallreport/destinationoption');
+                $filter->in('from_no','Source')->multipleSelect('/admin/auth/reports/outboundcallreport/destinationoption');
                 
                 $filter->where(function($query){
                     switch ($this->input){

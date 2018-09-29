@@ -10,10 +10,9 @@ trait LogRecord
     {
         $record['skip'] = false;
         
-        $record['total_waiting_time'] = '1970-01-01 '.$this->getTotalWaitingTime($record['time_start'], $record['time_end'] , $record['duration']);
-        $record['total_call_time'] = '1970-01-01 '.$this->getTotalCallTime($record['time_start'], $record['time_end']);
-        
-        
+        $record['name_missed_call'] = '';
+        $record['extintion_missed_call'] = '';
+         
         if(strtolower($record['from_type']) == 'line' && ((strtolower($record['to_type']) == 'queue' && $record['final_type'] == '' ) || strtolower($record['final_type']) == 'queue')){
             $record['call_type'] = 'unanswered';
             $record['call_sub_type'] = 'abondont';
@@ -37,6 +36,22 @@ trait LogRecord
         else{
             $record['skip'] = true;
         }
+        if(!$record['skip']){
+            $record['total_waiting_time'] = '1970-01-01 '.$this->getTotalWaitingTime($record['time_start'], $record['time_end'] , $record['duration']);
+            $record['total_call_time'] = '1970-01-01 '.$this->getTotalCallTime($record['time_start'], $record['time_end']);
+            
+            if($record['call_type'] == 'unanswered' &&  $record['call_sub_type'] =='queue_missed_call'){
+                $record['extintion_missed_call'] = $record['final_number'];
+                if($record['final_number'] == '')
+                    $record['extintion_missed_call'] = $record['to_no'];
+                
+                $record['name_missed_call'] = $record['final_dispname'];
+                if($record['final_dispname'] == '')
+                    $record['name_missed_call'] = $record['from_dispname'];
+            }
+
+        }
+       
         return $record;
     }
     

@@ -282,6 +282,7 @@ class Admin
                 $router->get('/auth/reports/destinationoption', 'InBoundCallReportController@destinationoption');
                 $router->get('/auth/reports/outboundcallreport', 'OutBoundCallReportController@index');
                 $router->get('/auth/reports/outboundcallreport/destinationoption', 'OutBoundCallReportController@destinationoption');
+                $router->get('/auth/reports/missedcallreport', 'MissedCallReportController@index');
                 
             });
 

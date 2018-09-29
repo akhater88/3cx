@@ -63,7 +63,7 @@ class InBoundCallReportController extends Controller
                             $query->where('from_no','like','Ext.8%');
                             break;
                         case 3:
-                            $query->whereRaw(" from_no in ('2','3','4','5','6') OR CHAR_LENGTH(from_no) > 10  ");
+                            $query->whereRaw(" CHAR_LENGTH(from_no) > 4  ");
                             break;
                         case 4:
                             $query->whereRaw(" CHAR_LENGTH(from_no) > 10  ");
@@ -71,11 +71,8 @@ class InBoundCallReportController extends Controller
                     }
                     
                     
-                },'Source')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'Externa (international)']);
-                $filter->where(function($query){
-                    $query->where('from_no',$this->input);
-                    
-                },'Destination')->select('/admin/auth/reports/destinationoption');
+                },'Source')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'External (international)']);
+                $filter->in('from_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption');
 
                 $filter->betweenCustome('duration', 'Duration')->time();
                 
