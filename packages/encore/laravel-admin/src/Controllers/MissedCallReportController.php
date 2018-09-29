@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Encore\Admin\Grid;
 use Encore\Admin\Models\LogReport;
 use Encore\Admin\Widgets\InfoBox;
+use Encore\Admin\Widgets\Table;
 use Encore\Admin\Controllers\Tools\ExcelExpoter;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid\Filter;
@@ -26,13 +27,39 @@ class MissedCallReportController extends Controller
         return Admin::content(function (Content $content) {
             
             $content->header('Reports 3cx');
-            $content->description('Missed Call Report');
+            $content->description('Missedcalls Report');
             
-            $content->body($this->grid());
-            $content->row(function ($row) {
-                $row->column(12, new InfoBox('MissedCalls', 'tel', 'red', '', '1020'));
+            //$content->body($this->grid());
+            
+            $data = $this->table();
+            $sumMissedCalls =  $data['count'];
+            $table1 = new Table($data['headers'], $data['rows']);
+            $content->row($table1);
+            $content->row(function ($row) use($sumMissedCalls){
+                $row->column(12, new InfoBox('MissedCalls', 'file', 'red', '',$sumMissedCalls));
             });
         });
+    }
+    
+    
+    
+    protected function table(){
+        $data = LogReport::selectRaw('count(id) as count_missed,extintion_missed_call,name_missed_call')->whereRaw("call_type = 'unanswered' and call_sub_type = 'queue_missed_call'")->groupBy(['name_missed_call','extintion_missed_call'])->get();
+        $headers = ['Id', 'extintion', 'Name', 'Missed Calls',];
+        $rows = [];
+        $counter = 1;
+        $sumMissedCalls = 0;
+        foreach ($data as $row){
+            $rowArray = [$counter,str_replace('Ext.','',$row->extintion_missed_call),$row->name_missed_call,$row->count_missed] ;
+            $rows[] = $rowArray;
+            $sumMissedCalls += $row->count_missed;
+            $counter++;
+        }
+        
+        $contentData = ['rows'=>$rows,'headers'=>$headers,'count'=>$sumMissedCalls];
+        
+        
+        return $contentData;
     }
     
     
@@ -56,35 +83,35 @@ class MissedCallReportController extends Controller
                 
                 $filter->disableIdFilter();
                 
-                $current = Carbon::now();
+//                 $current = Carbon::now();
                 
-                $filter->where(function ($query) {
-                    $input = $this->input;
+//                 $filter->where(function ($query) {
+//                     $input = $this->input;
                     
-                    $query->whereDate('sub_order_items.created_at', '>=', $input . ' 00:00:00');
-                }, trans('reports.cards.filter.from_date'))
-                ->date()
-                ->default($current->subDays(7)
-                    ->toDateString());
+//                     $query->whereDate('sub_order_items.created_at', '>=', $input . ' 00:00:00');
+//                 }, trans('reports.cards.filter.from_date'))
+//                 ->date()
+//                 ->default($current->subDays(7)
+//                     ->toDateString());
                 
-                $filter->where(function ($query) {
-                    $input = $this->input;
-                    $query->whereDate('sub_order_items.created_at', '<=', $input . ' 23:59:59');
-                }, trans('reports.cards.filter.to_date'))
-                ->date()
-                ->default($current->addDays(6)
-                    ->toDateString());
+//                 $filter->where(function ($query) {
+//                     $input = $this->input;
+//                     $query->whereDate('sub_order_items.created_at', '<=', $input . ' 23:59:59');
+//                 }, trans('reports.cards.filter.to_date'))
+//                 ->date()
+//                 ->default($current->addDays(6)
+//                     ->toDateString());
                 
-                $filter->where(function ($query) {
-                    $input = $this->input;
-                    $query->whereHas('product', function ($query) use ($input) {
-                        $query->where('products.country_id', $input);
-                    });
-                }, trans('reports.cards.filter.country'))
-                ->select(Country::all()->pluck('name', 'id'));
+//                 $filter->where(function ($query) {
+//                     $input = $this->input;
+//                     $query->whereHas('product', function ($query) use ($input) {
+//                         $query->where('products.country_id', $input);
+//                     });
+//                 }, trans('reports.cards.filter.country'))
+//                 ->select(Country::all()->pluck('name', 'id'));
                 
-                $filter->in('product.id', trans('reports.cards.filter.product'))
-                ->multipleSelect(Product::all()->pluck('name', 'id'));
+//                 $filter->in('product.id', trans('reports.cards.filter.product'))
+//                 ->multipleSelect(Product::all()->pluck('name', 'id'));
             });
 //                 $exporter = new ExcelExpoter();
                 
