@@ -72,7 +72,7 @@ class InBoundCallReportController extends Controller
                     
                     
                 },'Source')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'External (international)']);
-                $filter->in('from_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption');
+                $filter->in('from_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption',[],[],'idC','text');
 
                 $filter->betweenCustome('duration', 'Duration')->time();
                 
@@ -138,7 +138,7 @@ class InBoundCallReportController extends Controller
     }
     
     public function destinationoption(){
-        $result = LogReport::where('to_no','like','Ext.%')->select('from_no as id',"from_no as text")->groupBy('text')->get();
+        $result = LogReport::where('to_no','like','Ext.%')->select('to_no as idC',"to_no as text")->groupBy('text')->get();
         
         return $result;
     }

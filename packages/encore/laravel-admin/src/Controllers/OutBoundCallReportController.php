@@ -54,7 +54,7 @@ class OutBoundCallReportController extends Controller
             $grid->filter(function (Filter $filter) {
                 $filter->disableIdFilter();
                 $current = Carbon::now();
-                $filter->in('from_no','Source')->multipleSelect('/admin/auth/reports/outboundcallreport/destinationoption');
+                $filter->in('from_no','Source')->multipleSelect('/admin/auth/reports/outboundcallreport/destinationoption',[],[],'idC','text');
                 
                 $filter->where(function($query){
                     switch ($this->input){
@@ -139,7 +139,7 @@ class OutBoundCallReportController extends Controller
     }
     
     public function destinationoption(){
-        $result = LogReport::where('to_no','like','Ext.%')->select('from_no as id',"from_no as text")->groupBy('text')->get();
+        $result = LogReport::where('from_no','like','Ext.%')->select('from_no as idC',"from_no as text")->groupBy('text')->get();
         
         return $result;
     }

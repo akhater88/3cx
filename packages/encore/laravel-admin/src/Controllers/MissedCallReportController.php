@@ -7,6 +7,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Models\LogReport;
 use Encore\Admin\Widgets\InfoBox;
 use Encore\Admin\Widgets\Table;
+use Encore\Admin\Widgets\Form;
+use Encore\Admin\Widgets\Box;
 use Encore\Admin\Controllers\Tools\ExcelExpoter;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid\Filter;
@@ -29,21 +31,39 @@ class MissedCallReportController extends Controller
             $content->header('Reports 3cx');
             $content->description('Missedcalls Report');
             
-            //$content->body($this->grid());
+            $content->body($this->grid());
+//             $filter = $this->filter();
             
-            $data = $this->table();
-            $sumMissedCalls =  $data['count'];
-            $table1 = new Table($data['headers'], $data['rows']);
-            $content->row($table1);
-            $content->row(function ($row) use($sumMissedCalls){
-                $row->column(12, new InfoBox('MissedCalls', 'file', 'red', '',$sumMissedCalls));
-            });
+//             $content->row(new Box('Filter', $filter));
+//             $data = $this->table();
+//             $sumMissedCalls =  $data['count'];
+//             $table1 = new Table($data['headers'], $data['rows']);
+//             $content->body($table1);
+//             $content->row(function ($row) use($sumMissedCalls){
+//                 $row->column(12, new InfoBox('MissedCalls', 'file', 'red', '',$sumMissedCalls));
+                
+//             });
+               
         });
     }
     
+    protected function showFormParameters()
+    {
+       
+      
+    }
     
+    protected function filter(){
+        $form = new Form();
+        $form->multipleSelect('Extintions')->options('/admin/auth/reports/destinationoption');
+        $form->number('number', 'Number of calls');
+        $form->dateTimeRange('date_time_start', 'date_time_end', 'Date Rang');
+        return $form;
+    }
     
     protected function table(){
+        $parameters = request()->except(['_pjax', '_token']);
+        //dd($parameters);
         $data = LogReport::selectRaw('count(id) as count_missed,extintion_missed_call,name_missed_call')->whereRaw("call_type = 'unanswered' and call_sub_type = 'queue_missed_call'")->groupBy(['name_missed_call','extintion_missed_call'])->get();
         $headers = ['Id', 'extintion', 'Name', 'Missed Calls',];
         $rows = [];
@@ -53,7 +73,7 @@ class MissedCallReportController extends Controller
             $rowArray = [$counter,str_replace('Ext.','',$row->extintion_missed_call),$row->name_missed_call,$row->count_missed] ;
             $rows[] = $rowArray;
             $sumMissedCalls += $row->count_missed;
-            $counter++;
+            
         }
         
         $contentData = ['rows'=>$rows,'headers'=>$headers,'count'=>$sumMissedCalls];
@@ -70,48 +90,30 @@ class MissedCallReportController extends Controller
      */
     protected function grid()
     {
-        return Admin::grid(LogReport::class, function (Grid $grid) {
+       
+        
+        $table = Admin::grid(LogReport::class, function (Grid $grid){
             $user = Admin::user();
             $grid->model()->selectRaw('count(id) as count_missed,extintion_missed_call,name_missed_call')->whereRaw("call_type = 'unanswered' and call_sub_type = 'queue_missed_call'")->groupBy(['name_missed_call','extintion_missed_call']);
+            $grid->setView('admin::grid.missedcall');
             $grid->extintion_missed_call('Ext.');
             $grid->name_missed_call('Name');
             $grid->count_missed('Count');
-            
-            
-            
+            $count = $this->table()['count'];
             $grid->filter(function (Filter $filter) {
                 
                 $filter->disableIdFilter();
-                
-//                 $current = Carbon::now();
-                
-//                 $filter->where(function ($query) {
-//                     $input = $this->input;
+                $filter->in('extintion_missed_call','Extintions')->multipleSelect('/admin/auth/reports/missedcallreport/extintionoption',[],[],'id1','text');
+                $filter->where(function($query){
+                    $input = $this->input;
                     
-//                     $query->whereDate('sub_order_items.created_at', '>=', $input . ' 00:00:00');
-//                 }, trans('reports.cards.filter.from_date'))
-//                 ->date()
-//                 ->default($current->subDays(7)
-//                     ->toDateString());
+                    $query->havingRaw("count(*) > $input");
+                    //dd($query);
+                },'Number of calls');
                 
-//                 $filter->where(function ($query) {
-//                     $input = $this->input;
-//                     $query->whereDate('sub_order_items.created_at', '<=', $input . ' 23:59:59');
-//                 }, trans('reports.cards.filter.to_date'))
-//                 ->date()
-//                 ->default($current->addDays(6)
-//                     ->toDateString());
+               $filter->between('time_start','Interval')->datetime();
                 
-//                 $filter->where(function ($query) {
-//                     $input = $this->input;
-//                     $query->whereHas('product', function ($query) use ($input) {
-//                         $query->where('products.country_id', $input);
-//                     });
-//                 }, trans('reports.cards.filter.country'))
-//                 ->select(Country::all()->pluck('name', 'id'));
-                
-//                 $filter->in('product.id', trans('reports.cards.filter.product'))
-//                 ->multipleSelect(Product::all()->pluck('name', 'id'));
+
             });
 //                 $exporter = new ExcelExpoter();
                 
@@ -139,6 +141,13 @@ class MissedCallReportController extends Controller
                 Admin::script('$("a[class=export-selected]").remove();');
                 
         });
+        
+            return $table;
+    }
+    
+    public function extintionOption(){
+        $data = LogReport::selectRaw('extintion_missed_call as id1 ,extintion_missed_call as text')->whereRaw("call_type = 'unanswered' and call_sub_type = 'queue_missed_call'")->groupBy('text')->get();
+        return $data;
     }
     
 }
