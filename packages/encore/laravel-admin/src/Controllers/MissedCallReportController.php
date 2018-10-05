@@ -94,7 +94,19 @@ class MissedCallReportController extends Controller
         
         $table = Admin::grid(LogReport::class, function (Grid $grid){
             $user = Admin::user();
-            $grid->model()->selectRaw('count(id) as count_missed,extintion_missed_call,name_missed_call')->whereRaw("call_type = 'unanswered' and call_sub_type = 'queue_missed_call'")->groupBy(['name_missed_call','extintion_missed_call']);
+            $parameters = request()->except(['_pjax', '_token']);
+//             dd($parameters);
+            $countMissedCall = 0;
+            if(isset($parameters['count_missed']) && $parameters['count_missed'] != ''){
+                $countMissedCall = $parameters['count_missed'];
+            }
+            $toleranceCondition = '';
+            if(isset($parameters['tolerance']) && $parameters['tolerance'] != '' && $parameters['ring_time'] != '' && $parameters['talk_time'] != '' ){
+                
+                $toleranceCondition = ' OR (total_waiting_time > "1970-01-01 '.$parameters['ring_time'] .'"  and  duration < "1970-01-01 '.$parameters['talk_time'] .'" ) ';
+            } 
+            $grid->model()->selectRaw('extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->having('count_missed','>',$countMissedCall)->groupBy(['name_missed_call','extintion_missed_call']);
+            
             $grid->setView('admin::grid.missedcall');
             $grid->extintion_missed_call('Ext.');
             $grid->name_missed_call('Name');
@@ -105,40 +117,49 @@ class MissedCallReportController extends Controller
                 $filter->disableIdFilter();
                 $filter->in('extintion_missed_call','Extintions')->multipleSelect('/admin/auth/reports/missedcallreport/extintionoption',[],[],'id1','text');
                 $filter->where(function($query){
-                    $input = $this->input;
                     
-                    $query->havingRaw("count(*) > $input");
-                    //dd($query);
-                },'Number of calls');
+                },'Number of calls','count_missed');
                 
                $filter->between('time_start','Interval')->datetime();
+               
+               $filter->where(function($query){
+                   
+               },'Tolerance','tolerance')->checkbox(['1'=>'tolerance']);
+               
+               $filter->where(function($query){},'Ringing Time','ring_time')->time();
+               $filter->where(function($query){},'Talking Time','talk_time')->time();
+               
                 
 
             });
-//                 $exporter = new ExcelExpoter();
+                $exporter = new ExcelExpoter();
                 
-//                 $header = [
-//                     trans('reports.cards.excel_headers.name'),
-//                     trans('reports.cards.excel_headers.average_load_amount'),
-//                     trans('reports.cards.excel_headers.total_purchased_cards'),
-//                 ];
-//                 $exporter->fileName(trans('reports.cards.excel'))
-//                 ->title(trans('reports.cards.excel'))
-//                 ->tableColumns([
-//                     'pname',
-//                     'avg_load_amount',
-//                     'total_purchased_cards',
+                $header = [
+                    'Extintion',
+                    'Name',
+                    'Missed calls',
+                ];
+                $exporter->fileName('missedcallsreport')
+                ->title(trans('reports.cards.excel'))
+                ->tableColumns([
+                    'count_missed',
+                    'name_missed_call',
+                    'extintion_missed_call',
                     
-//                 ])
-//                 ->header($header);
+                    
+                    
+                ])
+                ->header($header);
                 
-//                 $grid->exporter($exporter);
+                $grid->exporter($exporter);
                 
                 $grid->disablePagination();
                 $grid->disableActions();
                 $grid->disableCreateButton();
                 $grid->disableRowSelector();
                 Admin::script('$("a[class=export-selected]").remove();');
+                Admin::script('$("a[class=current_page_export]").remove();');
+                
                 
         });
         

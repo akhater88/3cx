@@ -76,7 +76,7 @@ SCRIPT;
     </button>
     <ul class="dropdown-menu" role="menu">
         <li><a href="{$this->grid->getExportUrl('all')}" target="_blank">{$all}</a></li>
-        <li><a href="{$this->grid->getExportUrl('page', $page)}" target="_blank">{$currentPage}</a></li>
+        <li><a href="{$this->grid->getExportUrl('page', $page)}" class='current_page_export' target="_blank">{$currentPage}</a></li>
         <li><a href="{$this->grid->getExportUrl('selected', '__rows__')}" target="_blank" class='{$this->grid->getExportSelectedName()}'>{$selectedRows}</a></li>
     </ul>
 </div>
