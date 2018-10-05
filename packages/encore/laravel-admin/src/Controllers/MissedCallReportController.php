@@ -32,55 +32,12 @@ class MissedCallReportController extends Controller
             $content->description('Missedcalls Report');
             
             $content->body($this->grid());
-//             $filter = $this->filter();
-            
-//             $content->row(new Box('Filter', $filter));
-//             $data = $this->table();
-//             $sumMissedCalls =  $data['count'];
-//             $table1 = new Table($data['headers'], $data['rows']);
-//             $content->body($table1);
-//             $content->row(function ($row) use($sumMissedCalls){
-//                 $row->column(12, new InfoBox('MissedCalls', 'file', 'red', '',$sumMissedCalls));
-                
-//             });
+
                
         });
     }
     
-    protected function showFormParameters()
-    {
-       
-      
-    }
-    
-    protected function filter(){
-        $form = new Form();
-        $form->multipleSelect('Extintions')->options('/admin/auth/reports/destinationoption');
-        $form->number('number', 'Number of calls');
-        $form->dateTimeRange('date_time_start', 'date_time_end', 'Date Rang');
-        return $form;
-    }
-    
-    protected function table(){
-        $parameters = request()->except(['_pjax', '_token']);
-        //dd($parameters);
-        $data = LogReport::selectRaw('count(id) as count_missed,extintion_missed_call,name_missed_call')->whereRaw("call_type = 'unanswered' and call_sub_type = 'queue_missed_call'")->groupBy(['name_missed_call','extintion_missed_call'])->get();
-        $headers = ['Id', 'extintion', 'Name', 'Missed Calls',];
-        $rows = [];
-        $counter = 1;
-        $sumMissedCalls = 0;
-        foreach ($data as $row){
-            $rowArray = [$counter,str_replace('Ext.','',$row->extintion_missed_call),$row->name_missed_call,$row->count_missed] ;
-            $rows[] = $rowArray;
-            $sumMissedCalls += $row->count_missed;
-            
-        }
-        
-        $contentData = ['rows'=>$rows,'headers'=>$headers,'count'=>$sumMissedCalls];
-        
-        
-        return $contentData;
-    }
+  
     
     
     /**
@@ -105,13 +62,12 @@ class MissedCallReportController extends Controller
                 
                 $toleranceCondition = ' OR (total_waiting_time > "1970-01-01 '.$parameters['ring_time'] .'"  and  duration < "1970-01-01 '.$parameters['talk_time'] .'" ) ';
             } 
-            $grid->model()->selectRaw('extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->having('count_missed','>',$countMissedCall)->groupBy(['name_missed_call','extintion_missed_call']);
+            $grid->model()->selectRaw('extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->groupBy(['name_missed_call','extintion_missed_call']);
             
             $grid->setView('admin::grid.missedcall');
             $grid->extintion_missed_call('Ext.');
             $grid->name_missed_call('Name');
             $grid->count_missed('Count');
-            $count = $this->table()['count'];
             $grid->filter(function (Filter $filter) {
                 
                 $filter->disableIdFilter();
