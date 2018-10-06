@@ -26,7 +26,7 @@ class OutBoundCallReportController extends Controller
         return Admin::content(function (Content $content) {
             
             $content->header('Reports 3cx');
-            $content->description('Outbound calls');
+            $content->description('Outboundcalls');
             $content->body($this->grid());
         });
     }
@@ -65,7 +65,7 @@ class OutBoundCallReportController extends Controller
                             $query->where('to_no','like','Ext.8%');
                             break;
                         case 3:
-                            $query->whereRaw(" to_no in ('2','3','4','5','6') OR CHAR_LENGTH(from_no) > 10  ");
+                            $query->whereRaw(" to_no in ('2','3','4','5','6') OR CHAR_LENGTH(from_no) > 4  ");
                             break;
                         case 4:
                             $query->whereRaw(" CHAR_LENGTH(to_no) > 10  ");
@@ -73,7 +73,7 @@ class OutBoundCallReportController extends Controller
                     }
                     
                     
-                },'Destination')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'Externa (international)']);
+                },'Destination')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'External (international)']);
                
                 $filter->betweenCustome('duration', 'Duration')->time();
                 
