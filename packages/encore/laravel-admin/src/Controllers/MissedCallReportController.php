@@ -62,11 +62,29 @@ class MissedCallReportController extends Controller
                 
                 $toleranceCondition = ' OR (total_waiting_time > "1970-01-01 '.$parameters['ring_time'] .'"  and  duration < "1970-01-01 '.$parameters['talk_time'] .'" ) ';
             } 
-            $grid->model()->selectRaw('extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->having('count_missed','>',$countMissedCall)->groupBy(['name_missed_call','extintion_missed_call']);//->having('count_missed','>',$countMissedCall);
+            $grid->model()->selectRaw('from_dispname,final_dispname,to_no,final_number,extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->having('count_missed','>',$countMissedCall)->groupBy(['name_missed_call','extintion_missed_call']);//->having('count_missed','>',$countMissedCall);
             
             $grid->setView('admin::grid.missedcall');
-            $grid->extintion_missed_call('Ext.');
-            $grid->name_missed_call('Name');
+            $grid->column('Extintions')->display(function(){
+                $extintion = $this->extintion_missed_call;
+                if($extintion == ''){
+                    $extintion = $this->final_number;
+                }
+                if($extintion == ''){
+                    $extintion = $this->to_no;
+                }
+                return str_replace('Ext.','', $extintion);
+            });//extintion_missed_call('Extintions');
+            $grid->column('Name')->display(function(){
+                $name = $this->name_missed_call;
+                if($name == ''){
+                    $name = $this->final_dispname;
+                }
+                if($name == ''){
+                    $name = $this->from_dispname;
+                }
+                return $name;
+            });//name_missed_call('Name');
             $grid->count_missed('Count');
             $grid->filter(function (Filter $filter) {
                 
