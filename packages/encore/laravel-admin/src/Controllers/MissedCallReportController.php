@@ -62,7 +62,7 @@ class MissedCallReportController extends Controller
                 
                 $toleranceCondition = ' OR (total_waiting_time > "1970-01-01 '.$parameters['ring_time'] .'"  and  duration < "1970-01-01 '.$parameters['talk_time'] .'" ) ';
             } 
-            $grid->model()->selectRaw('extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->groupBy(['name_missed_call','extintion_missed_call']);//->having('count_missed','>',$countMissedCall);
+            $grid->model()->selectRaw('extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->having('count_missed','>',$countMissedCall)->groupBy(['name_missed_call','extintion_missed_call']);//->having('count_missed','>',$countMissedCall);
             
             $grid->setView('admin::grid.missedcall');
             $grid->extintion_missed_call('Ext.');
