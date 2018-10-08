@@ -65,10 +65,10 @@ class OutBoundCallReportController extends Controller
                             $query->whereRaw(' final_number like "Ext.8%" or (final_number = "" and to_no like "Ext.8%" )');
                             break;
                         case 3:
-                            $query->whereRaw(' CHAR_LENGTH(final_number) > 4 or (final_number = "" and CHAR_LENGTH(to_no) > 4 ) ');
+                            $query->whereRaw(' (CHAR_LENGTH(final_number) > 4 and final_number not like "Ext.%") or (final_number = "" and CHAR_LENGTH(to_no) > 4 and to_no not like "Ext.%" )  ');
                             break;
                         case 4:
-                            $query->whereRaw(' CHAR_LENGTH(final_number) > 9 or (final_number = "" and CHAR_LENGTH(to_no) > 9 ) ');
+                            $query->whereRaw(' (CHAR_LENGTH(final_number) > 9 and final_number not like "Ext.%" ) or (final_number = "" and CHAR_LENGTH(to_no) > 9 and to_no not like "Ext.%"  ) ');
                             break;
                     }
                     

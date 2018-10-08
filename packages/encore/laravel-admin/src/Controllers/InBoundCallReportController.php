@@ -63,10 +63,10 @@ class InBoundCallReportController extends Controller
                             $query->where('from_no','like','Ext.8%');
                             break;
                         case 3:
-                            $query->whereRaw(" CHAR_LENGTH(from_no) > 4  ");
+                            $query->whereRaw(" CHAR_LENGTH(from_no) > 4  and from_no not like 'Ext.%' ");
                             break;
                         case 4:
-                            $query->whereRaw(" CHAR_LENGTH(from_no) > 10  ");
+                            $query->whereRaw(" CHAR_LENGTH(from_no) > 10 and from_no not like 'Ext.%' ");
                             break;
                     }
                     
