@@ -26,7 +26,7 @@ class OutBoundCallReportController extends Controller
         return Admin::content(function (Content $content) {
             
             $content->header('Reports 3cx');
-            $content->description('Outboundcalls');
+            $content->description('Outbound calls');
             $content->body($this->grid());
         });
     }
@@ -59,16 +59,16 @@ class OutBoundCallReportController extends Controller
                 $filter->where(function($query){
                     switch ($this->input){
                         case 1:
-                            $query->where('to_no','like','Ext.%');
+                            $query->whereRaw(' final_number like "Ext.%" or (final_number = "" and to_no like "Ext.%" )');
                             break;
                         case 2:
-                            $query->where('to_no','like','Ext.8%');
+                            $query->whereRaw(' final_number like "Ext.8%" or (final_number = "" and to_no like "Ext.8%" )');
                             break;
                         case 3:
-                            $query->whereRaw(" to_no in ('2','3','4','5','6') OR CHAR_LENGTH(from_no) > 4  ");
+                            $query->whereRaw(' CHAR_LENGTH(final_number) > 4 or (final_number = "" and CHAR_LENGTH(to_no) > 4 ) ');
                             break;
                         case 4:
-                            $query->whereRaw(" CHAR_LENGTH(to_no) > 10  ");
+                            $query->whereRaw(' CHAR_LENGTH(final_number) > 9 or (final_number = "" and CHAR_LENGTH(to_no) > 9 ) ');
                             break;
                     }
                     

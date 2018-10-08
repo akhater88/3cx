@@ -26,7 +26,7 @@ class InBoundCallReportController extends Controller
         return Admin::content(function (Content $content) {
             
             $content->header('Reports 3cx');
-            $content->description('In Bound Calls');
+            $content->description('Inbound calls');
             $content->body($this->grid());
         });
     }    
