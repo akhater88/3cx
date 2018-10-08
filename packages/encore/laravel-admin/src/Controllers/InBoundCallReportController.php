@@ -72,7 +72,10 @@ class InBoundCallReportController extends Controller
                     
                     
                 },'Source')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'External (international)']);
-                $filter->in('from_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption',[],[],'idC','text');
+                $filter->where(function($query){
+                    $impolode = implode("','",$this->input);
+                    $query->whereRaw("(final_number != '' and final_number in ('$impolode') ) or (final_number = '' and to_no in ('$impolode') )");
+                },'Destination')->multipleSelect('/admin/auth/reports/destinationoption',[],[],'idC','text');;//in('to_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption',[],[],'idC','text');
 
                 $filter->betweenCustome('duration', 'Duration')->time();
                 
