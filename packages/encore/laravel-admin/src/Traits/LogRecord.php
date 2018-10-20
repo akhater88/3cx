@@ -49,7 +49,26 @@ trait LogRecord
                 if($record['final_dispname'] == '')
                     $record['name_missed_call'] = $record['from_dispname'];
             }
-
+            
+            $toNoStart = substr($record['to_no'],0,4);
+            $record['extintion_inbound'] = '';
+            $record['extintion_outbound'] = '';
+            $record['inbound_outbound_flag'] = '';
+            
+            if($toNoStart == 'Ext.'){
+                $value = $record['final_number'];
+                if($value == ''){
+                    $value = $record['to_no'];
+                }
+                $record['extintion_inbound'] = $value;
+                $record['inbound_outbound_flag'] = 'In';
+            }
+            
+            $fromNoStart = substr($record['from_no'],0,4);
+            if($fromNoStart == 'Ext.'){
+                $record['extintion_outbound'] = $record['from_no'];
+                $record['inbound_outbound_flag'] .= 'Out';
+            }
         }
        
         return $record;

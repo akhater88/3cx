@@ -15,7 +15,7 @@ class LogReport extends Model
 {
     use AdminBuilder;
 
-    protected $fillable = ['name_missed_call','extintion_missed_call',"total_waiting_time","total_call_time","historyid","callid","duration","time_start","time_answered","time_end","reason_terminated","from_no","to_no","from_dn","to_dn","dial_no","reason_changed","final_number","final_dn","chain","from_type","to_type","final_type","from_dispname","to_dispname","final_dispname","call_type","call_sub_type"];
+    protected $fillable = ['extintion_inbound','extintion_outbound','inbound_outbound_flag','name_missed_call','extintion_missed_call',"total_waiting_time","total_call_time","historyid","callid","duration","time_start","time_answered","time_end","reason_terminated","from_no","to_no","from_dn","to_dn","dial_no","reason_changed","final_number","final_dn","chain","from_type","to_type","final_type","from_dispname","to_dispname","final_dispname","call_type","call_sub_type"];
 
     
    protected $appends = ['customesource','customedestination','customedurationcustome','custometotalwaitingtime','custometotalcalltime'];
