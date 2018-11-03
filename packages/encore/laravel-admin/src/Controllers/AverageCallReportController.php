@@ -47,6 +47,7 @@ class AverageCallReportController extends Controller
        
         
         return Admin::grid(LogReport::class, function (Grid $grid){
+            $grid->model()->where('call_type','=', "answered");
             $parameters = request()->except(['_pjax', '_token']);
 //                         dd($parameters);
                         $whereInCond = "";
@@ -88,8 +89,9 @@ class AverageCallReportController extends Controller
             }
             
             $dataIn = LogReport::selectRaw('extintion_inbound,final_dispname,to_dispname,count(id) as count_call')->whereRaw(' inbound_outbound_flag like "In%" '.$where.' '.$whereInCond.' '.$whereFromDate.' '.$whereToDate)->groupBy(['extintion_inbound'])->get();
-            $dataOut = LogReport::selectRaw('extintion_outbound,from_dispname,count(id) as count_call')->whereRaw(' inbound_outbound_flag like "Out" Or inbound_outbound_flag like "%Out" '.$where.' '.$whereOutCond.' '.$whereFromDate.' '.$whereToDate)->groupBy(['extintion_outbound'])->get();
-            $attrArray = ['dataIn' => $dataIn,'dataOut' => $dataOut];
+             $dataOut = LogReport::selectRaw('extintion_outbound,from_dispname,count(id) as count_call')->whereRaw(' inbound_outbound_flag like "Out" Or inbound_outbound_flag like "%Out" '.$where.' '.$whereOutCond.' '.$whereFromDate.' '.$whereToDate)->groupBy(['extintion_outbound'])->get();
+             
+             $attrArray = ['dataIn' => $dataIn,'dataOut' => $dataOut];
             if(isset($parameters['calltype']) && $parameters['calltype'] != ''){
                 if($parameters['calltype'] == '1'){
                     unset($attrArray['dataOut']);
@@ -98,7 +100,7 @@ class AverageCallReportController extends Controller
                     unset($attrArray['dataIn']);
                 }
             }
-           
+            
             
             $grid->setView('admin::grid.averagecall',$attrArray);
             

@@ -60,7 +60,7 @@ class ReceivedCallReportController extends Controller
             
             $grid->model()->selectRaw('final_number,to_no,to_dispname,final_dispname,count(id) as count_received')->whereRaw(" call_type = 'answered' ")->having('count_received','>',$countReceived)->groupBy(['final_number','final_number']);
             
-            $grid->column('Extentions')->display(function(){
+            $grid->column('Destination')->display(function(){
                 $extintion = $this->final_number;
                 if($extintion == ''){
                     $extintion = $this->to_no;
@@ -96,10 +96,10 @@ class ReceivedCallReportController extends Controller
                     
                     
                 },'Source')->select(['1'=>'Internal','2'=>'Operator Queue','3'=>'External (National & International)','4'=>'External (international)']);
-                $filter->in('final_number','Extentions')->multipleSelect('/admin/auth/reports/receivedcallreport/extintionoption',[],[],'id1','text');
+                $filter->in('final_number','Destination')->multipleSelect('/admin/auth/reports/receivedcallreport/extintionoption',[],[],'id1','text');
                 $filter->where(function($query){
                     
-                },'Number of calls','count_received');
+                },'Number of Calls More Than','count_received');
                 
                $filter->between('time_start','Interval')->datetime();
 
@@ -107,7 +107,7 @@ class ReceivedCallReportController extends Controller
                 $exporter = new ExcelExpoter();
                 
                 $header = [
-                    'Extintion',
+                    'Destination',
                     'Name',
                     'Received calls',
                 ];

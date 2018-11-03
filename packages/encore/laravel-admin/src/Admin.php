@@ -289,6 +289,9 @@ class Admin
                 $router->get('/auth/reports/averagecallreport/extintionoption', 'AverageCallReportController@extintionOption'); 
                 $router->get('/auth/reports/receivedcallreport', 'ReceivedCallReportController@index');
                 $router->get('/auth/reports/receivedcallreport/extintionoption', 'ReceivedCallReportController@extintionOption'); 
+                $router->get('/auth/reports/busyextention', 'BusyExtentionReportController@index'); 
+                $router->get('/auth/reports/busyextention/extintionoption', 'BusyExtentionReportController@extintionOption'); 
+                
                 
             });
 

@@ -21,7 +21,7 @@ trait LogRecord
             $record['call_type'] = 'unanswered';
             $record['call_sub_type'] = 'busy';
         }
-        elseif(strtolower($record['from_type']) == 'queue' && (((strtolower($record['to_type']) == 'extension' &&  strtolower($record['final_type']) == '') || trtolower($record['final_type']) == 'extension') && !(strtolower($record['reason_terminated']) == 'terminatedbydst' || strtolower($record['reason_terminated']) == 'terminatebysrc' ))){
+        elseif(strtolower($record['from_type']) == 'queue' && (((strtolower($record['to_type']) == 'extension' &&  strtolower($record['final_type']) == '') || strtolower($record['final_type']) == 'extension') && !(strtolower($record['reason_terminated']) == 'terminatedbydst' || strtolower($record['reason_terminated']) == 'terminatebysrc' ))){
             $record['call_type'] = 'unanswered';
             $record['call_sub_type'] = 'queue_missed_call';
         }
@@ -47,7 +47,7 @@ trait LogRecord
                 
                 $record['name_missed_call'] = $record['final_dispname'];
                 if($record['final_dispname'] == '')
-                    $record['name_missed_call'] = $record['from_dispname'];
+                    $record['name_missed_call'] = $record['to_dispname'];
             }
             
             $toNoStart = substr($record['to_no'],0,4);

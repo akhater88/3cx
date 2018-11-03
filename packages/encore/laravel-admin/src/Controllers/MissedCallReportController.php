@@ -81,7 +81,7 @@ class MissedCallReportController extends Controller
                     $name = $this->final_dispname;
                 }
                 if($name == ''){
-                    $name = $this->from_dispname;
+                    $name = $this->to_dispname;
                 }
                 return $name;
             });//name_missed_call('Name');
