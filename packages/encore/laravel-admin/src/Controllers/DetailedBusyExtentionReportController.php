@@ -64,24 +64,33 @@ class DetailedBusyExtentionReportController extends Controller
                 
             }
             
-            $dataCallAnswered = LogReport::selectRaw('dial_no,count(id) as call_counter')->whereRaw(' call_sub_type = "busy" '.$whereIn.' '.$whereFromDate.' '.$whereToDate)->groupBy(['dial_no'])->get();
+            $dataCallAnswered = LogReport::selectRaw('from_no,from_dispname,dial_no,time_start')->whereRaw(' call_sub_type = "busy" '.$whereIn.' '.$whereFromDate.' '.$whereToDate)->groupBy(['dial_no'])->get();
             $dataToGrid = [];
             foreach ($dataCallAnswered as $row){
                 $dial_no = $row->dial_no;
-                $callCounter = $row->call_counter;
-                $nameObject = LogReport::selectRaw('from_dispname as name, from_no,')->whereRaw(' from_no = "Ext.'.$dial_no.'" and call_type = "answered" ')->get();
+                $time_start = $row->time_start;
+                $busyWithObject = LogReport::whereRaw(' chain like "%Ext.'.$dial_no.'%" and call_type = "answered" and time_start < "'.$time_start.'" and time_end > "'.$time_start.'" ')->first();
+                $extBusyWith = 'unknown';
+                $dateTime = 'unknown';
+                if(!is_null($busyWithObject)){
+                    $extBusyWith = $busyWithObject['from_no'];
+                    if($extBusyWith == $dial_no){
+                        $extBusyWith = $busyWithObject['to_no'];
+                    }
+                    $dateTime = $busyWithObject['time_start'];
+                }
+                $nameObject = LogReport::selectRaw('from_dispname as name')->whereRaw(' from_no = "Ext.'.$dial_no.'" and call_type = "answered" ')->first();
                 if($nameObject == null){
                     $nameObject = LogReport::selectRaw('to_dispname as name')->whereRaw(' to_no = "Ext.'.$dial_no.'" and call_type = "answered" ')->first();
                     if($nameObject == null){
                         $nameObject = LogReport::selectRaw('final_dispname as name')->whereRaw(' final_number = "Ext.'.$dial_no.'" and call_type = "answered" ')->first();
                     }
                 }
-                
                 $name = $nameObject->name;
-                $dataToGrid[] = ['ext'=>$dial_no,'name'=>$name,'counter'=>$callCounter];
+                $dataToGrid[] = ['date_time'=>$dateTime,'ext'=>$dial_no,'name'=>$name,'caller' => str_replace('Ext.','',$row->from_no),'busy_with' => $extBusyWith];
             }
-            $grid->setView('admin::grid.busycall',['dataToGrid'=>$dataToGrid]);
-            $grid->disablePagination();
+            $grid->setView('admin::grid.detailedbusycall',['dataToGrid'=>$dataToGrid]);
+            //$grid->disablePagination();
             $grid->disableActions();
             $grid->disableCreateButton();
             $grid->disableRowSelector();
@@ -92,9 +101,9 @@ class DetailedBusyExtentionReportController extends Controller
                 $filter->where(function($query){},'Extintion','ext')->multipleSelect('/admin/auth/reports/busyextention/extintionoption',[],[],'idC','text');
                 $filter->between('time_start','Date & time')->datetime();
             });
-            
-            Admin::script('$("a[class=export-selected]").remove();');
-            Admin::script('$("a[class=current_page_export]").remove();');
+                
+                Admin::script('$("a[class=export-selected]").remove();');
+                Admin::script('$("a[class=current_page_export]").remove();');
         });
     }
     

@@ -43,7 +43,7 @@ class Read3cxLogFile extends Command
     public function handle()
     {
         try{
-            $path = "storage/logs/cdr_new.csv";
+            $path = "storage/logs/newLog.csv";//cdr_new
             $file = new File($path);
             $content = $file->openFile();
             $count = 1;
@@ -59,20 +59,25 @@ class Read3cxLogFile extends Command
                     $record = str_replace("\r\n","",$record);
                     $recordArray = explode(',', $record);
                     foreach ($indexArray as $key => $value){
-                        if($key == 0){
-                            $value = 'historyid';
+                        try{
+                            if($key == 0){
+                                $value = 'historyid';
+                            }
+                            $index = str_replace('-', '_',$value);
+                            $arrayOfIndexesTime = ['time_start','time_answered','time_end'];
+                            if(in_array($index, $arrayOfIndexesTime)){
+                                $time = strtotime($recordArray[$key]);
+                                $recordArray[$key] = date('Y-m-d H:i:s',$time);
+                            }
+                            if($index == 'duration'){
+                                $time = strtotime('1970-01-01 '.$recordArray[$key]);
+                                $recordArray[$key] = date('Y-m-d H:i:s',$time);
+                            }
+                            $index = str_replace("\n", '', $index);
+                            $recordIndexedArray[$index] = $recordArray[$key];
+                        } catch (\Exception $e){
+                            continue;
                         }
-                        $index = str_replace('-', '_',$value);
-                        $arrayOfIndexesTime = ['time_start','time_answered','time_end'];
-                        if(in_array($index, $arrayOfIndexesTime)){
-                            $time = strtotime($recordArray[$key]);
-                            $recordArray[$key] = date('Y-m-d H:i:s',$time);
-                        }
-                        if($index == 'duration'){
-                            $time = strtotime('1970-01-01 '.$recordArray[$key]);
-                            $recordArray[$key] = date('Y-m-d H:i:s',$time);
-                        }
-                        $recordIndexedArray[$index] = $recordArray[$key];
                     }
                     
                     $parsedArray = $this->parselogRecord($recordIndexedArray);
@@ -86,7 +91,7 @@ class Read3cxLogFile extends Command
                 $count++;
             }
         } catch (\Exception $e){
-            dd($e);
+            
         }
         
     }
