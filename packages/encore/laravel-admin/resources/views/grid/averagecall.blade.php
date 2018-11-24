@@ -21,7 +21,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Extintions</th>
+                    <th>Extension</th>
                     <th>Name</th>
                 </tr>
             </thead>

@@ -21,7 +21,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Extintions</th>
+                    <th>Extensions</th>
                     <th>Name</th>
                     <th>Missed Call While Busy</th>
                 </tr>

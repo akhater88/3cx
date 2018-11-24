@@ -89,7 +89,7 @@ class BusyExtentionReportController extends Controller
             $grid->filter(function (Filter $filter) {
                 $filter->disableIdFilter();
                 $current = Carbon::now();
-                $filter->where(function($query){},'Extintion','ext')->multipleSelect('/admin/auth/reports/busyextention/extintionoption',[],[],'idC','text');
+                $filter->where(function($query){},'Extensions','ext')->multipleSelect('/admin/auth/reports/busyextention/extintionoption',[],[],'idC','text');
                 $filter->between('time_start','Date & time')->datetime();
             });
             

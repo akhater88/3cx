@@ -113,7 +113,7 @@ class AverageCallReportController extends Controller
                 $filter->disableIdFilter();
                 $current = Carbon::now();
                 $filter->where(function($query){},'Call Type','calltype')->select(['0'=>'All','1'=>'Inbound','2'=>'Outbound']);
-                $filter->where(function($query){},'Extintion','ext')->multipleSelect('/admin/auth/reports/averagecallreport/extintionoption',[],[],'idC','text');;//in('to_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption',[],[],'idC','text');
+                $filter->where(function($query){},'Extension','ext')->multipleSelect('/admin/auth/reports/averagecallreport/extintionoption',[],[],'idC','text');;//in('to_no','Destination')->multipleSelect('/admin/auth/reports/destinationoption',[],[],'idC','text');
                 $filter->where(function($query){},"Status",'status')->select(['all'=>'All','answered'=>'Answered','unanswered'=>'Unanswered','abondont'=>'Abandoned']);
                 $filter->between('time_start','Date & time')->datetime();
             });

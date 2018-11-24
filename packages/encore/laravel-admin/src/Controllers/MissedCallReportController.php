@@ -65,7 +65,7 @@ class MissedCallReportController extends Controller
             $grid->model()->selectRaw('from_dispname,final_dispname,to_no,final_number,extintion_missed_call,name_missed_call,count(id) as count_missed')->whereRaw("(call_type = 'unanswered' and call_sub_type = 'queue_missed_call') $toleranceCondition ")->having('count_missed','>',$countMissedCall)->groupBy(['name_missed_call','extintion_missed_call']);//->having('count_missed','>',$countMissedCall);
             
             $grid->setView('admin::grid.missedcall');
-            $grid->column('Extentions')->display(function(){
+            $grid->column('Target Extension')->display(function(){
                 $extintion = $this->extintion_missed_call;
                 if($extintion == ''){
                     $extintion = $this->final_number;
@@ -85,11 +85,11 @@ class MissedCallReportController extends Controller
                 }
                 return $name;
             });//name_missed_call('Name');
-            $grid->count_missed('Count');
+            $grid->count_missed('Missed Calls');
             $grid->filter(function (Filter $filter) {
                 
                 $filter->disableIdFilter();
-                $filter->in('extintion_missed_call','Extentions')->multipleSelect('/admin/auth/reports/missedcallreport/extintionoption',[],[],'id1','text');
+                $filter->in('extintion_missed_call','Extensions')->multipleSelect('/admin/auth/reports/missedcallreport/extintionoption',[],[],'id1','text');
                 $filter->where(function($query){
                     
                 },'Number of calls','count_missed');
@@ -98,7 +98,7 @@ class MissedCallReportController extends Controller
                
                $filter->where(function($query){
                    
-               },'Tolerance','tolerance')->checkbox(['1'=>'tolerance']);
+               },'Tolerance','tolerance')->checkbox(['1'=>'Tolerance']);
                
                $filter->where(function($query){},'Ringing Time more than','ring_time')->time();
                $filter->where(function($query){},'Talking Time less than','talk_time')->time();
@@ -109,7 +109,7 @@ class MissedCallReportController extends Controller
                 $exporter = new ExcelExpoter();
                 
                 $header = [
-                    'Extintion',
+                    'Extensions',
                     'Name',
                     'Missed calls',
                 ];

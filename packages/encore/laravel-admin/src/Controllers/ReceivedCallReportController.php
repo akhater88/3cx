@@ -60,7 +60,7 @@ class ReceivedCallReportController extends Controller
             
             $grid->model()->selectRaw('final_number,to_no,to_dispname,final_dispname,count(id) as count_received')->whereRaw(" call_type = 'answered' ")->having('count_received','>',$countReceived)->groupBy(['final_number','final_number']);
             
-            $grid->column('Destination')->display(function(){
+            $grid->column('Extension')->display(function(){
                 $extintion = $this->final_number;
                 if($extintion == ''){
                     $extintion = $this->to_no;
@@ -74,7 +74,7 @@ class ReceivedCallReportController extends Controller
                 }
                 return $name;
             });
-            $grid->count_received('Count');
+            $grid->count_received('Received Calls');
             $grid->filter(function (Filter $filter) {
                 
                 $filter->disableIdFilter();
@@ -101,7 +101,7 @@ class ReceivedCallReportController extends Controller
                     
                 },'Number of Calls More Than','count_received');
                 
-               $filter->between('time_start','Interval')->datetime();
+               $filter->between('time_start','Date & Time')->datetime();
 
             });
                 $exporter = new ExcelExpoter();

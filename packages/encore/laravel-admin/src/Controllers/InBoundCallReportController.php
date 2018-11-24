@@ -45,7 +45,7 @@ class InBoundCallReportController extends Controller
             $grid->customedestination('Source');
             $grid->customesource('Destination');
             $grid->to_dispname('Name');
-            $grid->call_type('Status');
+            //$grid->call_type('Status');
             $grid->call_sub_type('Status Call');
             $grid->customedurationcustome('Duration');
             $grid->custometotalwaitingtime('Total Waiting Time');
