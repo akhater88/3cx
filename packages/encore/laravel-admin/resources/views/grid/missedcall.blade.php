@@ -50,7 +50,7 @@
             
                 <tr>
                 		<td>
-                			Totals
+                			Total
                 		</td>
                 		<td>
                 			{!! $sum !!}
