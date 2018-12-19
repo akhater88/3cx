@@ -10,10 +10,8 @@
             <input type="text" class="form-control" id="{{$id['end']}}" placeholder="To" name="{{$name['end']}}" value="{{ request($name['end'], array_get($value, 'end')) }}">
                
         </div>
-        <p>
-            To get less than fill To and leave from empty
-      		<br>
-      		To get greater than fill From and leave To empty
-      		</p>   
+        <span class="right" title="" data-placement="right" data-toggle="tooltip" data-original-title="To get less than date fill To and leave from empty, To get greater than date fill From and leave To empty"><i class="fa fa-info-circle"></i>
+
+</span>
     </div>
 </div>
