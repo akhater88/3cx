@@ -47,12 +47,11 @@ class Read3cxLogFileFTP extends Command
         try{
            // echo "start \n";
             $local_file = 'storage/logs/ftglog.csv';
-            $remote_file = 'cdr_new.csv';
-            $ftp_server = "212.118.4.146";
+            $remote_file = env('FTP_REMOTE_FILE');
+            $ftp_server = env('FTP_IP');
             $ftp_conn = ftp_connect($ftp_server) or die("Could not connect to $ftp_server");
-            $login = ftp_login($ftp_conn, 'admin','admin123');
+            $login = ftp_login($ftp_conn,env('FTP_USER_NAME'),env('FTP_PASS'));
             
-            //$handle = fopen($local_file, 'w');
             ftp_pasv($ftp_conn, true);
             
          
@@ -62,7 +61,7 @@ class Read3cxLogFileFTP extends Command
                echo "There was a problem while downloading $remote_file to $local_file\n";
             }
             $todayDate = date("Y-m-d");
-            ftp_rename($ftp_conn,'cdr_new.csv',"cdr$todayDate.csv");
+            //ftp_rename($ftp_conn,$remote_file,"cdr$todayDate.csv");
             
             ftp_close($ftp_conn); 
             //$path = ;//"storage/logs/newLog.csv";//cdr_new
@@ -73,13 +72,12 @@ class Read3cxLogFileFTP extends Command
             
             $record = "historyid,callid,duration,time-start,time-answered,time-end,reason-terminated,from-no,to-no,from-dn,to-dn,dial-no,reason-changed,final-number,final-dn,chain,from-type,to-type,final-type,from-dispname,to-dispname,final-dispname";
             $indexArray = explode(',', $record);
-            
             foreach ($content as $record) {
                 $modCount = $count%2;
-                
-                if($modCount == 0){
+                if($modCount != 0){
                     $recordIndexedArray = [];
                     $record = str_replace("\r\n","",$record);
+                    $record = str_replace("\t",",",$record);
                     $recordArray = explode(',', $record);
                     foreach ($indexArray as $key => $value){
                         try{
@@ -103,7 +101,12 @@ class Read3cxLogFileFTP extends Command
                         }
                     }
                     
-                    $parsedArray = $this->parselogRecord($recordIndexedArray);
+                    try {
+                        $parsedArray = $this->parselogRecord($recordIndexedArray);
+                    } catch (\Exception $e){
+                        continue;
+                    }
+                   
                     if(!$parsedArray['skip']){
                         $logObject = new LogReport();
                         $logObject->fill($parsedArray);
