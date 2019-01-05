@@ -61,7 +61,7 @@ class Read3cxLogFileFTP extends Command
                echo "There was a problem while downloading $remote_file to $local_file\n";
             }
             $todayDate = date("Y-m-d");
-            //ftp_rename($ftp_conn,$remote_file,"cdr$todayDate.csv");
+            ftp_rename($ftp_conn,$remote_file,"cdr$todayDate.csv");
             
             ftp_close($ftp_conn); 
             //$path = ;//"storage/logs/newLog.csv";//cdr_new
