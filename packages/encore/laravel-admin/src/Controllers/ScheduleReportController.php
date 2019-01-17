@@ -32,5 +32,18 @@ class InBoundCallReportController extends Controller
     }    
 
 
-    
+    /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+        ->header(trans('admin.administrator'))
+        ->description(trans('admin.edit'))
+        ->body($this->form()->edit($id));
+    }
 }
